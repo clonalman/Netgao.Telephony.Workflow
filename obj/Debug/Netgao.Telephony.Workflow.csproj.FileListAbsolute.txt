@@ -1,7 +1,0 @@
-D:\Projects\Netgao\CallCenter\Netgao.Telephony.Workflow\obj\Debug\Netgao.Telephony.Workflow.Design.WorkflowDesignerControl.resources
-D:\Projects\Netgao\CallCenter\Netgao.Telephony.Workflow\obj\Debug\Netgao.Telephony.Workflow.Properties.Resources.resources
-D:\Projects\Netgao\CallCenter\Netgao.Telephony.Workflow\obj\Debug\Netgao.Telephony.Workflow.csproj.GenerateResource.Cache
-D:\Projects\Netgao\CallCenter\Netgao.Telephony.Workflow\bin\Debug\Netgao.Telephony.Workflow.dll
-D:\Projects\Netgao\CallCenter\Netgao.Telephony.Workflow\bin\Debug\Netgao.Telephony.Workflow.pdb
-D:\Projects\Netgao\CallCenter\Netgao.Telephony.Workflow\obj\Debug\Netgao.Telephony.Workflow.dll
-D:\Projects\Netgao\CallCenter\Netgao.Telephony.Workflow\obj\Debug\Netgao.Telephony.Workflow.pdb
