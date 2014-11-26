@@ -3,6 +3,9 @@ Netgao.Telephony.Workflow
 
 Call Control Workflow Library
 
+The call control workflow library allows developers to create windows workflows that support call control
+including call transfer and detecting call events, and presence awareness for using presence to intelligently route calls.
+
 c# Sample Code:
 
     public class CallBrowser : Browser
