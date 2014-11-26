@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping auto-import="true" 
+                   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   xmlns="urn:nhibernate-mapping-2.2"> 
+
+  <class name="Netgao.Telephony.Workflow.Domain.CallLog, Netgao.Telephony.Workflow" table="Telephony_CallLogs" lazy="false">
+
+    <id name="Id" access="property" column="ID" type="Int32">
+      <generator class="native" />
+    </id>
+
+    <many-to-one name="Folder" access="property" class="Netgao.Telephony.Workflow.Domain.FilingFolder, Netgao.Telephony.Workflow" column="FOLDER_ID" fetch="join" not-found="ignore" />
+
+    <property name="SessionId" access="property" type="String">
+      <column name="SESSION_ID" not-null="true" length="16" />
+    </property>
+
+    <property name="Sequence" access="property" type="Int32">
+      <column name="SEQUENCE" not-null="true" />
+    </property>
+
+    <property name="AccountCode" access="property" type="String">
+      <column name="ACCOUNT_CODE" length="255" />
+    </property>
+
+    <property name="AccessCode" access="property" type="String">
+      <column name="ACCESS_CODE" length="255" />
+    </property>
+
+    <property name="CallerId" access="property" type="String">
+      <column name="CALLER_ID" length="255" />
+    </property>
+
+    <property name="CallerNumber" access="property" type="String">
+      <column name="CALLER_NUMBER" length="255" />
+    </property>
+
+    <property name="CallerName" access="property" type="String">
+      <column name="CALLER_NAME" length="255" />
+    </property>
+
+    <property name="CallerPad" access="property" type="Int32">
+      <column name="CALLER_PAD" />
+    </property>
+
+    <property name="CallerType" access="property" type="Int32">
+      <column name="CALLER_TYPE" />
+    </property>
+
+    <property name="CalleeId" access="property" type="String">
+      <column name="CALLEE_ID" length="255" />
+    </property>
+
+    <property name="CalleeNumber" access="property" type="String">
+      <column name="CALLEE_NUMBER" length="255" />
+    </property>
+
+    <property name="CalleeName" access="property" type="String">
+      <column name="CALLEE_NAME" length="255" />
+    </property>
+
+    <property name="CalleePad" access="property" type="Int32">
+      <column name="CALLEE_PAD" />
+    </property>
+
+    <property name="CalleeType" access="property" type="Int32">
+      <column name="CALLEE_TYPE" />
+    </property>
+
+    <property name="CallType" access="property">
+      <column name="CALL_TYPE" not-null="true" />
+    </property>
+
+    <property name="StartTime" access="property" type="DateTime">
+      <column name="START_TIME" length="8"/>
+    </property>
+
+    <property name="EndTime" access="property" type="DateTime">
+      <column name="END_TIME" length="8"/>
+    </property>
+
+    <property name="RingTime" access="property" type="DateTime">
+      <column name="RING_TIME" length="8"/>
+    </property>
+
+    <property name="AnswerTime" access="property" type="DateTime">
+      <column name="ANSWER_TIME" length="8"/>
+    </property>
+
+    <property name="QueueTime" access="property" type="DateTime">
+      <column name="QUEUE_TIME" length="8"/>
+    </property>
+
+    <property name="NoAnswerTime" access="property" type="DateTime">
+      <column name="NOANSWER_TIME" length="8"/>
+    </property>
+
+    <property name="BusyTime" access="property" type="DateTime">
+      <column name="BUSY_TIME" length="8"/>
+    </property>
+
+    <property name="AttendantTime" access="property" type="DateTime">
+      <column name="ATTENDANT_TIME" length="8"/>
+    </property>
+
+    <property name="RingDuration" access="property" type="TimeSpan">
+      <column name="RING_DURATION" />
+    </property>
+
+    <property name="HoldDuration" access="property" type="TimeSpan">
+      <column name="HOLD_DURATION" />
+    </property>
+
+    <property name="QueueDuration" access="property" type="TimeSpan">
+      <column name="QUEUE_DURATION" />
+    </property>
+
+    <property name="TalkDuration" access="property" type="TimeSpan">
+      <column name="TALK_DURATION" />
+    </property>
+
+    <property name="VmDuration" access="property" type="TimeSpan">
+      <column name="VM_DURATION" />
+    </property>
+
+    <property name="VmRecordDuration" access="property" type="TimeSpan">
+      <column name="VM_RECORD_DURATION" />
+    </property>
+
+    <property name="AttendantDuration" access="property" type="TimeSpan">
+      <column name="ATTENDANT_DURATION"  length="8" />
+    </property>
+
+    <property name="AAExitPoint" access="property" type="String">
+      <column name="AA_EXIT_POINT" length="255" />
+    </property>
+
+    <property name="ExitState" access="property">
+      <column name="EXIT_STATE"/>
+    </property>
+
+    <property name="AudioFileName" access="property" type="String">
+      <column name="AUDIO_FILENAME" length="1024" />
+    </property>
+
+    <property name="DtmfString" access="property" type="String">
+      <column name="DTMF_STRING" length="255" />
+    </property>
+
+    <property name="GMTOffset" access="property" type="Int32">
+      <column name="GMT_OFFSET" />
+    </property>
+
+    <property name="Description" access="property" type="String">
+      <column name="DESCRIPTION" length="1024" />
+    </property>
+    
+  </class>
+
+</hibernate-mapping>

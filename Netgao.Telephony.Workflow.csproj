@@ -1,0 +1,373 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9F579012-5237-492D-B9AF-2365F886157F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Netgao.Telephony.Workflow</RootNamespace>
+    <AssemblyName>Netgao.Telephony.Workflow</AssemblyName>
+    <ProjectTypeGuids>{14822709-B5A1-4724-98CA-57A101D1B079};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>http://localhost/Call.Core/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Workflow.Activities">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Workflow.ComponentModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Workflow.Runtime">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.WorkflowServices">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Activities\CalleeActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\CalleeActivity.Designer.cs">
+      <DependentUpon>CalleeActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\CalleeDesigner.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Activities\CallMethodActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\CallMethodActivity.Designer.cs">
+      <DependentUpon>CallMethodActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\GoToActivityDesigner.cs" />
+    <Compile Include="Activities\MethodMessageWrapper.cs" />
+    <Compile Include="Activities\QueueExEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Activities\ClearEventArgs.cs" />
+    <Compile Include="Activities\RuleExpression.cs">
+    </Compile>
+    <Compile Include="Activities\RuleExpressionTypeConverter.cs" />
+    <Compile Include="Activities\RuleExpressionValidator.cs" />
+    <Compile Include="Activities\OnTerminatedActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\OnTerminatedActivity.Designer.cs">
+      <DependentUpon>OnTerminatedActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\CompletedEventArgs.cs" />
+    <Compile Include="Activities\TerminatedEventArgs.cs" />
+    <Compile Include="Activities\ChannelTypeConverter.cs" />
+    <Compile Include="Activities\DebugActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\DebugActivity.Designer.cs">
+      <DependentUpon>DebugActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\LogActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\LogActivity.Designer.cs">
+      <DependentUpon>LogActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\RuleTypeAttribute.cs" />
+    <Compile Include="Activities\TalkActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\TalkActivity.Designer.cs">
+      <DependentUpon>TalkActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\TalkEventArgs.cs" />
+    <Compile Include="Activities\HandleEventActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\HandleEventActivity.Designer.cs">
+      <DependentUpon>HandleEventActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\WorkflowDialogEditor.cs" />
+    <Compile Include="Activities\QueueActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\QueueActivity.Designer.cs">
+      <DependentUpon>QueueActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\StartedEventArgs.cs" />
+    <Compile Include="Activities\OnHangupActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\OnHangupActivity.Designer.cs">
+      <DependentUpon>OnHangupActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\RoutedEventArgs.cs" />
+    <Compile Include="Activities\RecordEventArgs.cs" />
+    <Compile Include="Activities\LogEventArgs.cs" />
+    <Compile Include="Activities\WorkflowConverter.cs" />
+    <Compile Include="Design\FileDialogEditor.cs" />
+    <Compile Include="Design\TypeDescriptorContext.cs" />
+    <Compile Include="ICorrelationService.cs" />
+    <Compile Include="UccTrackingChannel.cs" />
+    <Compile Include="UccTrackingService.cs" />
+    <Compile Include="UccPendingWorkItem.cs" />
+    <Compile Include="UccFilePersistenceService.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.resx.cs" />
+    <Compile Include="UccLogWatcher.cs" />
+    <Compile Include="UccWorkflow.cs" />
+    <Compile Include="UccWorkflowRuntime.cs" />
+    <Compile Include="Activities\ClearActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\ClearActivity.Designer.cs">
+      <DependentUpon>ClearActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\GoToActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\GoToActivity.Designer.cs">
+      <DependentUpon>GoToActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\PickupActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\PickupActivity.Designer.cs">
+      <DependentUpon>PickupActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\HangupActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\HangupActivity.Designer.cs">
+      <DependentUpon>HangupActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\BlindTransferActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\BlindTransferActivity.Designer.cs">
+      <DependentUpon>BlindTransferActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\OnCompletedActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\OnCompletedActivity.Designer.cs">
+      <DependentUpon>OnCompletedActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\OnStartedActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\OnStartedActivity.Designer.cs">
+      <DependentUpon>OnStartedActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\SendToneActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\SendToneActivity.Designer.cs">
+      <DependentUpon>SendToneActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\PlayActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\PlayActivity.Designer.cs">
+      <DependentUpon>PlayActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\OnRingingActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\OnRingingActivity.Designer.cs">
+      <DependentUpon>OnRingingActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\OnDialingActivity.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Activities\OnDialingActivity.Designer.cs">
+      <DependentUpon>OnDialingActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\FileDialogEditor.cs" />
+    <Compile Include="Design\EventBindingService.cs" />
+    <Compile Include="Design\Helpers.cs" />
+    <Compile Include="Design\Loader.cs" />
+    <Compile Include="Design\MemberCreationService.cs" />
+    <Compile Include="Design\PropertyValueUIService.cs" />
+    <Compile Include="Design\ToolboxService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Design\WorkflowDesignerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Design\WorkflowDesignerControl.Designer.cs">
+      <DependentUpon>WorkflowDesignerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Design\WorkflowMenuCommandService.cs" />
+    <Compile Include="Design\WorkflowPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Design\WorkflowPage.Designer.cs">
+      <DependentUpon>WorkflowPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Activities\HangupEventArgs.cs" />
+    <Compile Include="Activities\PickupEventArgs.cs" />
+    <Compile Include="UccTerminalInstance.cs" />
+    <Compile Include="UccTerminalService.cs" />
+    <Compile Include="ITerminalInstance.cs" />
+    <Compile Include="TerminalEventArgs.cs" />
+    <Compile Include="ITerminalService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Activities\BlindTransferEventArgs.cs" />
+    <Compile Include="TerminalCollection.cs" />
+    <Compile Include="Activities\SendToneEventArgs.cs" />
+    <Compile Include="Activities\DialingEventArgs.cs" />
+    <Compile Include="Activities\PlayEventArgs.cs" />
+    <Compile Include="Activities\RingingEventArgs.cs" />
+    <Compile Include="Activities\RuleExpressionEditor.cs" />
+    <Compile Include="UccWorkThread.cs" />
+    <Compile Include="UccCorrelationService.cs" />
+    <Compile Include="CorrelationServiceArgs.cs" />
+    <Compile Include="CallWorkflowService.cs" />
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Activities\Resources\DialActivity.png" />
+    <EmbeddedResource Include="Activities\Resources\HangupActivity.png" />
+    <EmbeddedResource Include="Activities\Resources\PickupActivity.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Activities\Resources\OnCompletedActivity.png" />
+    <EmbeddedResource Include="Activities\Resources\OnStartedActivity.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Activities\Resources\SendToneActivity.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Activities\Resources\BlindTransferActivity.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Activities\Resources\GoToActivity.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Activities\Resources\PlayActivity.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Design\ToolboxItems.txt" />
+    <EmbeddedResource Include="Design\WorkflowDesignerControl.resx">
+      <DependentUpon>WorkflowDesignerControl.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Activities\Resources\ClearActivity.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Activities\Resources\OnRingingActivity.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Activities\Resources\OnDialingActivity.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Activities\Resources\OnTerminatedActivity.png" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Activities\Resources\CaleeActivity.png" />
+    <Content Include="Activities\Resources\DtmfActivity.png" />
+    <EmbeddedResource Include="Activities\Resources\OnHangupActivity.png" />
+    <EmbeddedResource Include="Activities\Resources\OnTimeoutActivity.png" />
+    <EmbeddedResource Include="Activities\Resources\QueueActivity.png" />
+    <EmbeddedResource Include="Activities\Resources\TalkActivity.png" />
+    <EmbeddedResource Include="Activities\Resources\LogActivity.png" />
+    <EmbeddedResource Include="Properties\Mapping\Agent.hbm.xml" />
+    <EmbeddedResource Include="Properties\Mapping\AgentGroup.hbm.xml" />
+    <EmbeddedResource Include="Properties\Mapping\AgentLog.hbm.xml" />
+    <EmbeddedResource Include="Properties\Mapping\CallLog.hbm.xml" />
+    <EmbeddedResource Include="Properties\Mapping\CallLogSummary.hbm.xml" />
+    <EmbeddedResource Include="Properties\Mapping\FilingFolder.hbm.xml" />
+    <EmbeddedResource Include="Properties\Mapping\TimeInterval.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(TargetPath) $(SolutionDir)Library /Y /E</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(MSBuildToolsPath)\Workflow.Targets" />
+</Project>

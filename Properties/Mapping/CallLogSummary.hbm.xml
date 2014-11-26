@@ -1,0 +1,527 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping auto-import="true" 
+                   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   xmlns="urn:nhibernate-mapping-2.2">
+
+  <sql-query name="CallSummary">
+    <return-scalar column="TotalCalls" type="Int32"/>
+    <return-scalar column="InternalCalls" type="Int32"/>
+    <return-scalar column="ExternalCalls" type="Int32"/>
+    <return-scalar column="OutgoingCalls" type="Int32"/>
+    <return-scalar column="IncomingCalls" type="Int32"/>
+
+    <return-scalar column="TotalDuration" type="TimeSpan"/>
+    <return-scalar column="InternalDuration" type="TimeSpan"/>
+    <return-scalar column="ExternalDuration" type="Int32"/>
+    <return-scalar column="IncomingDuration" type="TimeSpan"/>
+    <return-scalar column="OutgoingDuration" type="TimeSpan"/>
+
+    <query-param name="CalleeId" type="String"/>
+    <query-param name="StartTime" type="DateTime"/>
+    <query-param name="EndTime" type="DateTime"/>
+    <![CDATA[
+    select 
+      --所有电话
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE > 0) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as TotalCalls,
+      --内部电话
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=1) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as InternalCalls,
+      --外部电话
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE & 2=2) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as ExternalCalls,
+      --呼入电话
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as IncomingCalls,
+      --呼出电话
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=10) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as OutgoingCalls
+      --总时间
+      (select Sum(DATEDIFF(second, START_TIME, END_TIME) from [Telephony_CallLogs] where (CALL_TYPE > 0) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as TotalDuration,
+      --内部电话
+      (select Sum(DATEDIFF(second, START_TIME, END_TIME) from [Telephony_CallLogs] where (CALL_TYPE=1) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as InternalDuration,
+      --外部电话
+      (select Sum(DATEDIFF(second, START_TIME, END_TIME) from [Telephony_CallLogs] where (CALL_TYPE&2=2) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as ExternalDuration
+    ]]>
+  </sql-query>
+    
+  <sql-query name="ExternalCallSummary">
+    <return-scalar column="TotalCalls" type="Int32"/>
+    <return-scalar column="OutgoingCalls" type="Int32"/>
+    <return-scalar column="IncomingCalls" type="Int32"/>
+    <return-scalar column="AttendantCalls" type="Int32"/>
+    <return-scalar column="QueueCalls" type="Int32"/>
+    <return-scalar column="AnswerCalls" type="Int32"/>
+    <return-scalar column="MessageCalls" type="Int32"/>
+    <return-scalar column="AbandonCalls" type="Int32"/>
+    
+    <return-scalar column="TotalDuration" type="TimeSpan"/>
+    <return-scalar column="IncomingDuration" type="TimeSpan"/>
+    <return-scalar column="OutgoingDuration" type="TimeSpan"/>  
+    <return-scalar column="RingDuration" type="TimeSpan"/>
+    <return-scalar column="TalkDuration" type="TimeSpan"/>
+    <return-scalar column="HoldDuration" type="TimeSpan"/>
+    <return-scalar column="AttendantDuration" type="TimeSpan"/>
+    <return-scalar column="QueueDuration" type="TimeSpan"/>
+    <return-scalar column="VMDuration" type="TimeSpan"/>
+    <return-scalar column="VMRecordDuration" type="TimeSpan"/> 
+    
+    <query-param name="StartTime" type="DateTime"/>
+    <query-param name="EndTime" type="DateTime"/>
+    <query-param name="CallId" type="String"/>
+    <![CDATA[
+    select 
+      --外部电话
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE & 2=2) and (:CallId = '' or (CALLEE_ID=:CallId or CALLER_ID=:CallId)) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as TotalCalls,
+      --呼出电话
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=10) and (:CallId = '' or CALLER_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as OutgoingCalls,
+      --呼入电话
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as IncomingCalls,
+      --IVR
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (ATTENDANT_DURATION > 0) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as AttendantCalls,
+      --QUEUE
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (QUEUE_DURATION > 0) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as QueueCalls,
+      --ANSWER
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (TALK_DURATION > 0) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as AnswerCalls,
+      --MESSAGE
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (VM_DURATION > 0) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as MessageCalls,
+      --呼损次数
+      (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (EXIT_STATE=5 or EXIT_STATE=9) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as AbandonCalls,     
+      --外部电话
+      IsNull((select Sum(DATEDIFF(second, START_TIME, END_TIME) * 10000000) from [Telephony_CallLogs] where (CALL_TYPE & 2=2) and (:CallId = '' or (CALLEE_ID=:CallId or CALLER_ID=:CallId)) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as TotalDuration,
+      --呼出电话
+      IsNull((select Sum(DATEDIFF(second, START_TIME, END_TIME) * 10000000) from [Telephony_CallLogs] where (CALL_TYPE=10) and (:CallId = '' or CALLER_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as OutgoingDuration,
+      --呼入电话
+      IsNull((select Sum(DATEDIFF(second, START_TIME, END_TIME) * 10000000) from [Telephony_CallLogs] where (CALL_TYPE=6) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as IncomingDuration,   
+      --振铃时间
+      IsNull((select Sum(RING_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (RING_DURATION > 0) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as RingDuration,
+      --通话时间
+      IsNull((select Sum(TALK_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (TALK_DURATION > 0) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as TalkDuration,
+      --保留时间
+      IsNull((select Sum(HOLD_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (HOLD_DURATION > 0) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as HoldDuration,
+      --IVR时间
+      IsNull((select Sum(ATTENDANT_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (ATTENDANT_DURATION > 0) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as AttendantDuration,
+      --排队时间
+      IsNull((select Sum(QUEUE_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (QUEUE_DURATION > 0) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as QueueDuration,
+      --信箱时间
+      IsNull((select Sum(VM_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (VM_DURATION > 0) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as VMDuration,
+      --录音时间
+      IsNull((select Sum(VM_RECORD_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (VM_RECORD_DURATION > 0) and (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as VMRecordDuration    
+    ]]>
+  </sql-query>
+
+
+  <sql-query name="ExternalTimeSlotSummary">
+    <return-scalar column="TimeSlot" type="DateTime"/>
+    <return-scalar column="TotalCalls" type="Int32"/>
+    <return-scalar column="OutgoingCalls" type="Int32"/>
+    <return-scalar column="IncomingCalls" type="Int32"/>
+    <return-scalar column="AttendantCalls" type="Int32"/>
+    <return-scalar column="RingCalls" type="Int32"/>
+    <return-scalar column="QueueCalls" type="Int32"/>
+    <return-scalar column="AnswerCalls" type="Int32"/>
+    <return-scalar column="MessageCalls" type="Int32"/>
+    <return-scalar column="AbandonCalls" type="Int32"/>
+
+    <return-scalar column="TotalDuration" type="TimeSpan"/>
+    <return-scalar column="IncomingDuration" type="TimeSpan"/>
+    <return-scalar column="OutgoingDuration" type="TimeSpan"/>
+    <return-scalar column="RingDuration" type="TimeSpan"/>
+    <return-scalar column="TalkDuration" type="TimeSpan"/>
+    <return-scalar column="HoldDuration" type="TimeSpan"/>
+    <return-scalar column="AttendantDuration" type="TimeSpan"/>
+    <return-scalar column="QueueDuration" type="TimeSpan"/>
+    <return-scalar column="VMDuration" type="TimeSpan"/>
+    <return-scalar column="VMRecordDuration" type="TimeSpan"/>
+
+    <query-param name="StartTime" type="DateTime"/>
+    <query-param name="EndTime" type="DateTime"/>
+    <query-param name="Factor" type="Int32"/>
+    <query-param name="CalleeId" type="String"/>
+    <![CDATA[
+    SELECT TOTAL_CALLS.TimeSlot, TotalCalls, TotalDuration, 
+           OutgoingCalls,OutgoingDuration,IncomingCalls,IncomingDuration,
+           RingCalls, RingDuration,AttendantCalls,AttendantDuration, 
+           QueueCalls, QueueDuration,AnswerCalls, TalkDuration, HoldDuration, 
+           MessageCalls,VmDuration,VmRecordDuration, AbandonCalls FROM (
+      SELECT COUNT(*) as TotalCalls, SUM(DATEDIFF(second, START_TIME, END_TIME) * 10000000) as TotalDuration, TIME_SLOT as TimeSlot FROM (
+        SELECT *, CAST((FLOOR(CAST(START_TIME AS FLOAT) * 24 * :Factor) + (0.003 / 3600)) / (24 * :Factor) AS DATETIME) AS TIME_SLOT 
+        FROM [Telephony_CallLogs] ) AS LOGS WHERE CALL_TYPE & 2=2 
+        and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+        GROUP BY TIME_SLOT 
+    ) AS TOTAL_CALLS 
+    LEFT JOIN (
+      SELECT COUNT(*) as OutgoingCalls, Sum(DATEDIFF(second, START_TIME, END_TIME) * 10000000) as OutgoingDuration, TIME_SLOT as TimeSlot FROM (
+        SELECT *, CAST((FLOOR(CAST(START_TIME AS FLOAT) * 24 * :Factor) + (0.003 / 3600)) / (24 * :Factor) AS DATETIME) AS TIME_SLOT 
+        FROM [Telephony_CallLogs] ) AS LOGS WHERE CALL_TYPE =10 
+        and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)
+        GROUP BY TIME_SLOT 
+    ) AS OUTGOING_CALLS ON TOTAL_CALLS.TimeSlot = OUTGOING_CALLS.TimeSlot
+    LEFT JOIN (
+      SELECT COUNT(*) as IncomingCalls, Sum(DATEDIFF(second, START_TIME, END_TIME) * 10000000) as IncomingDuration, TIME_SLOT as TimeSlot FROM (
+        SELECT *, CAST((FLOOR(CAST(START_TIME AS FLOAT) * 24 * :Factor) + (0.003 / 3600)) / (24 * :Factor) AS DATETIME) AS TIME_SLOT 
+        FROM [Telephony_CallLogs] ) AS LOGS WHERE CALL_TYPE =6 
+        and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)
+        GROUP BY TIME_SLOT 
+    ) AS INCOMING_CALLS ON TOTAL_CALLS.TimeSlot = INCOMING_CALLS.TimeSlot
+    LEFT JOIN(
+      SELECT COUNT(*) as RingCalls, Sum(RING_DURATION) as RingDuration, TIME_SLOT as TimeSlot FROM (
+        SELECT *, CAST((FLOOR(CAST(START_TIME AS FLOAT) * 24 * :Factor) + (0.003 / 3600)) / (24 * :Factor) AS DATETIME) AS TIME_SLOT 
+        FROM [Telephony_CallLogs] ) AS LOGS WHERE CALL_TYPE =6 and RING_DURATION > 0 
+        and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)
+        GROUP BY TIME_SLOT 
+    ) AS RINGING_CALLS ON TOTAL_CALLS.TimeSlot = RINGING_CALLS.TimeSlot
+    LEFT JOIN (
+      SELECT COUNT(*) as AttendantCalls, Sum(ATTENDANT_DURATION) as AttendantDuration, TIME_SLOT as TimeSlot FROM (
+        SELECT *, CAST((FLOOR(CAST(START_TIME AS FLOAT) * 24 * :Factor) + (0.003 / 3600)) / (24 * :Factor) AS DATETIME) AS TIME_SLOT 
+        FROM [Telephony_CallLogs] ) AS LOGS WHERE CALL_TYPE =6 and ATTENDANT_DURATION > 0
+        and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+        GROUP BY TIME_SLOT 
+    ) AS ATTENDANT_CALLS ON TOTAL_CALLS.TimeSlot = ATTENDANT_CALLS.TimeSlot
+    LEFT JOIN (
+      SELECT COUNT(*) as QueueCalls, Sum(QUEUE_DURATION) as QueueDuration,TIME_SLOT as TimeSlot FROM (
+        SELECT *, CAST((FLOOR(CAST(START_TIME AS FLOAT) * 24 * :Factor) + (0.003 / 3600)) / (24 * :Factor) AS DATETIME) AS TIME_SLOT 
+        FROM [Telephony_CallLogs] ) AS LOGS WHERE CALL_TYPE =6 and QUEUE_DURATION > 0 
+        and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)
+        GROUP BY TIME_SLOT 
+    ) AS QUEUE_CALLS ON TOTAL_CALLS.TimeSlot = QUEUE_CALLS.TimeSlot
+    LEFT JOIN (
+      SELECT COUNT(*) as AnswerCalls, Sum(TALK_DURATION) as TalkDuration, TIME_SLOT as TimeSlot FROM (
+        SELECT *, CAST((FLOOR(CAST(START_TIME AS FLOAT) * 24 * :Factor) + (0.003 / 3600)) / (24 * :Factor) AS DATETIME) AS TIME_SLOT 
+        FROM [Telephony_CallLogs] ) AS LOGS WHERE CALL_TYPE =6 and TALK_DURATION > 0 
+        and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)
+        GROUP BY TIME_SLOT 
+    ) AS ANSWER_CALLS ON TOTAL_CALLS.TimeSlot = ANSWER_CALLS.TimeSlot
+    LEFT JOIN (
+      SELECT COUNT(*) as HoldCalls, Sum(HOLD_DURATION) as HoldDuration, TIME_SLOT as TimeSlot FROM (
+        SELECT *, CAST((FLOOR(CAST(START_TIME AS FLOAT) * 24 * :Factor) + (0.003 / 3600)) / (24 * :Factor) AS DATETIME) AS TIME_SLOT 
+        FROM [Telephony_CallLogs] ) AS LOGS WHERE CALL_TYPE =6 and HOLD_DURATION > 0 
+        and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)
+        GROUP BY TIME_SLOT 
+    ) AS HOLD_CALLS ON TOTAL_CALLS.TimeSlot = HOLD_CALLS.TimeSlot
+    LEFT JOIN (
+      SELECT COUNT(*) as MessageCalls, Sum(VM_DURATION) as VmDuration, Sum(VM_RECORD_DURATION) as VmRecordDuration, TIME_SLOT as TimeSlot FROM (
+        SELECT *, CAST((FLOOR(CAST(START_TIME AS FLOAT) * 24 * :Factor) + (0.003 / 3600)) / (24 * :Factor) AS DATETIME) AS TIME_SLOT 
+        FROM [Telephony_CallLogs] ) AS LOGS WHERE CALL_TYPE =6 and VM_DURATION > 0 
+        and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)
+        GROUP BY TIME_SLOT 
+    ) AS MESSAGE_CALLS ON TOTAL_CALLS.TimeSlot = MESSAGE_CALLS.TimeSlot
+    LEFT JOIN(
+      SELECT COUNT(*) as AbandonCalls, TIME_SLOT as TimeSlot FROM (
+        SELECT *, CAST((FLOOR(CAST(START_TIME AS FLOAT) * 24 * :Factor) + (0.003 / 3600)) / (24 * :Factor) AS DATETIME) AS TIME_SLOT 
+        FROM [Telephony_CallLogs] ) AS LOGS WHERE CALL_TYPE =6 and (EXIT_STATE=5 or EXIT_STATE=9) 
+        and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)
+        GROUP BY TIME_SLOT 
+    ) AS ABANDON_CALLS ON TOTAL_CALLS.TimeSlot = ABANDON_CALLS.TimeSlot
+    ]]>
+  </sql-query>
+
+  <sql-query name="ExternalWorkLoadSummary">
+    <return-scalar column="CallId" type="String"/>
+    <return-scalar column="TotalCalls" type="Int32"/>
+    <return-scalar column="OutgoingCalls" type="Int32"/>
+    <return-scalar column="IncomingCalls" type="Int32"/>
+    <return-scalar column="AttendantCalls" type="Int32"/>
+    <return-scalar column="RingCalls" type="Int32"/>
+    <return-scalar column="QueueCalls" type="Int32"/>
+    <return-scalar column="AnswerCalls" type="Int32"/>
+    <return-scalar column="MessageCalls" type="Int32"/>
+    <return-scalar column="AbandonCalls" type="Int32"/>
+
+    <return-scalar column="TotalDuration" type="TimeSpan"/>
+    <return-scalar column="IncomingDuration" type="TimeSpan"/>
+    <return-scalar column="OutgoingDuration" type="TimeSpan"/>
+    <return-scalar column="RingDuration" type="TimeSpan"/>
+    <return-scalar column="TalkDuration" type="TimeSpan"/>
+    <return-scalar column="HoldDuration" type="TimeSpan"/>
+    <return-scalar column="AttendantDuration" type="TimeSpan"/>
+    <return-scalar column="QueueDuration" type="TimeSpan"/>
+    <return-scalar column="VMDuration" type="TimeSpan"/>
+    <return-scalar column="VMRecordDuration" type="TimeSpan"/>
+    
+    <query-param name="StartTime" type="DateTime"/>
+    <query-param name="EndTime" type="DateTime"/>
+    <query-param name="CallId" type="String"/>
+    <![CDATA[
+    SELECT TOTAL_CALLS.CallId, 
+	     TotalCalls, TotalDuration, 
+       OutgoingCalls,OutgoingDuration,IncomingCalls,IncomingDuration,
+       RingCalls, RingDuration,AttendantCalls,AttendantDuration, 
+       QueueCalls, QueueDuration,AnswerCalls, TalkDuration, HoldDuration, 
+       MessageCalls,VmDuration,VmRecordDuration, AbandonCalls FROM (
+      SELECT SUM(TotalCalls) as TotalCalls, SUM(TotalDuration) as TotalDuration, CallId FROM (
+        SELECT COUNT(*) as TotalCalls, SUM(DATEDIFF(second, START_TIME, END_TIME) * 10000000) as TotalDuration, CALLEE_ID as CallId
+        FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 
+        AND (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+        GROUP BY CALLEE_ID 
+        UNION
+        SELECT COUNT(*) as TotalCalls, SUM(DATEDIFF(second, START_TIME, END_TIME) * 10000000) as TotalDuration, CALLER_ID as CallId
+        FROM [Telephony_CallLogs] WHERE CALL_TYPE =10 
+        AND (:CallId = '' or CALLER_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+        GROUP BY CALLER_ID) as AA 
+      GROUP BY CallId
+    ) AS TOTAL_CALLS 
+    LEFT JOIN (
+      SELECT COUNT(*) as OutgoingCalls, SUM(DATEDIFF(second, START_TIME, END_TIME) * 10000000) as OutgoingDuration, CALLER_ID as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =10 
+      AND (:CallId = '' or CALLER_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY CALLER_ID
+    ) AS OUTGOING_CALLS ON TOTAL_CALLS.CallId = OUTGOING_CALLS.CallId
+    LEFT JOIN (
+      SELECT COUNT(*) as IncomingCalls, SUM(DATEDIFF(second, START_TIME, END_TIME) * 10000000) as IncomingDuration, CALLEE_ID as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 
+      AND (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY CALLEE_ID
+    ) AS INCOMING_CALLS ON TOTAL_CALLS.CallId = INCOMING_CALLS.CallId
+    LEFT JOIN(
+      SELECT COUNT(*) as RingCalls, Sum(RING_DURATION) as RingDuration, CALLEE_ID as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and RING_DURATION > 0
+      AND (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY CALLEE_ID 
+    ) AS RINGING_CALLS ON TOTAL_CALLS.CallId = RINGING_CALLS.CallId
+    LEFT JOIN (
+      SELECT COUNT(*) as AttendantCalls, Sum(ATTENDANT_DURATION) as AttendantDuration, CALLEE_ID as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and ATTENDANT_DURATION > 0
+      AND (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY CALLEE_ID 
+    ) AS ATTENDANT_CALLS ON TOTAL_CALLS.CallId = ATTENDANT_CALLS.CallId
+    LEFT JOIN (
+	  SELECT COUNT(*) as QueueCalls, Sum(QUEUE_DURATION) as QueueDuration, CALLEE_ID as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and QUEUE_DURATION > 0
+      AND (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY CALLEE_ID 
+    ) AS QUEUE_CALLS ON TOTAL_CALLS.CallId = QUEUE_CALLS.CallId
+    LEFT JOIN (
+      SELECT COUNT(*) as AnswerCalls, Sum(TALK_DURATION) as TalkDuration, CALLEE_ID as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and TALK_DURATION > 0
+      AND (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY CALLEE_ID 
+    ) AS ANSWER_CALLS ON TOTAL_CALLS.CallId = ANSWER_CALLS.CallId
+    LEFT JOIN (
+      SELECT COUNT(*) as HoldCalls, Sum(HOLD_DURATION) as HoldDuration, CALLEE_ID as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and HOLD_DURATION > 0
+      AND (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY CALLEE_ID
+    ) AS HOLD_CALLS ON TOTAL_CALLS.CallId = HOLD_CALLS.CallId
+    LEFT JOIN (
+	  SELECT COUNT(*) as MessageCalls, Sum(VM_DURATION) as VmDuration, Sum(VM_RECORD_DURATION) as VmRecordDuration, CALLEE_ID as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and VM_DURATION > 0
+      AND (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY CALLEE_ID
+    ) AS MESSAGE_CALLS ON TOTAL_CALLS.CallId = MESSAGE_CALLS.CallId
+    LEFT JOIN(
+	  SELECT COUNT(*) as AbandonCalls, CALLEE_ID as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and (EXIT_STATE=5 or EXIT_STATE=9) 
+      AND (:CallId = '' or CALLEE_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY CALLEE_ID
+    ) AS ABANDON_CALLS ON TOTAL_CALLS.CallId = ABANDON_CALLS.CallId  
+    ]]>
+  </sql-query>
+
+  <sql-query name="ExternalAccountSummary">
+    <return-scalar column="CallId" type="String"/>
+    <return-scalar column="TotalCalls" type="Int32"/>
+    <return-scalar column="OutgoingCalls" type="Int32"/>
+    <return-scalar column="IncomingCalls" type="Int32"/>
+    <return-scalar column="AttendantCalls" type="Int32"/>
+    <return-scalar column="RingCalls" type="Int32"/>
+    <return-scalar column="QueueCalls" type="Int32"/>
+    <return-scalar column="AnswerCalls" type="Int32"/>
+    <return-scalar column="MessageCalls" type="Int32"/>
+    <return-scalar column="AbandonCalls" type="Int32"/>
+
+    <return-scalar column="TotalDuration" type="TimeSpan"/>
+    <return-scalar column="IncomingDuration" type="TimeSpan"/>
+    <return-scalar column="OutgoingDuration" type="TimeSpan"/>
+    <return-scalar column="RingDuration" type="TimeSpan"/>
+    <return-scalar column="TalkDuration" type="TimeSpan"/>
+    <return-scalar column="HoldDuration" type="TimeSpan"/>
+    <return-scalar column="AttendantDuration" type="TimeSpan"/>
+    <return-scalar column="QueueDuration" type="TimeSpan"/>
+    <return-scalar column="VMDuration" type="TimeSpan"/>
+    <return-scalar column="VMRecordDuration" type="TimeSpan"/>
+
+    <query-param name="StartTime" type="DateTime"/>
+    <query-param name="EndTime" type="DateTime"/>
+    <query-param name="CallId" type="String"/>
+    <![CDATA[
+    SELECT TOTAL_CALLS.CallId, TotalCalls, TotalDuration, 
+       OutgoingCalls,OutgoingDuration,IncomingCalls,IncomingDuration,
+       RingCalls, RingDuration,AttendantCalls,AttendantDuration, 
+       QueueCalls, QueueDuration,AnswerCalls, TalkDuration, HoldDuration, 
+       MessageCalls,VmDuration,VmRecordDuration, AbandonCalls FROM (
+	  SELECT COUNT(*) as TotalCalls, SUM(DATEDIFF(second, START_TIME, END_TIME) * 10000000) as TotalDuration, ACCOUNT_CODE as CallId
+	  FROM [Telephony_CallLogs] WHERE CALL_TYPE & 2 = 2 
+	  AND (:CallId = '' or ACCOUNT_CODE=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+	  GROUP BY ACCOUNT_CODE   
+    ) AS TOTAL_CALLS 
+    LEFT JOIN (
+      SELECT COUNT(*) as OutgoingCalls, SUM(DATEDIFF(second, START_TIME, END_TIME) * 10000000) as OutgoingDuration, ACCOUNT_CODE as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =10 
+      AND (:CallId = '' or CALLER_ID=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY ACCOUNT_CODE
+    ) AS OUTGOING_CALLS ON TOTAL_CALLS.CallId = OUTGOING_CALLS.CallId
+    LEFT JOIN (
+      SELECT COUNT(*) as IncomingCalls, SUM(DATEDIFF(second, START_TIME, END_TIME) * 10000000) as IncomingDuration, ACCOUNT_CODE as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 
+      AND (:CallId = '' or ACCOUNT_CODE=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY ACCOUNT_CODE
+    ) AS INCOMING_CALLS ON TOTAL_CALLS.CallId = INCOMING_CALLS.CallId
+    LEFT JOIN(
+      SELECT COUNT(*) as RingCalls, Sum(RING_DURATION) as RingDuration, ACCOUNT_CODE as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and RING_DURATION > 0
+      AND (:CallId = '' or ACCOUNT_CODE=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY ACCOUNT_CODE 
+    ) AS RINGING_CALLS ON TOTAL_CALLS.CallId = RINGING_CALLS.CallId
+    LEFT JOIN (
+      SELECT COUNT(*) as AttendantCalls, Sum(ATTENDANT_DURATION) as AttendantDuration, ACCOUNT_CODE as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and ATTENDANT_DURATION > 0
+      AND (:CallId = '' or ACCOUNT_CODE=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY ACCOUNT_CODE 
+    ) AS ATTENDANT_CALLS ON TOTAL_CALLS.CallId = ATTENDANT_CALLS.CallId
+    LEFT JOIN (
+	  SELECT COUNT(*) as QueueCalls, Sum(QUEUE_DURATION) as QueueDuration, ACCOUNT_CODE as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and QUEUE_DURATION > 0
+      AND (:CallId = '' or ACCOUNT_CODE=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY ACCOUNT_CODE 
+    ) AS QUEUE_CALLS ON TOTAL_CALLS.CallId = QUEUE_CALLS.CallId
+    LEFT JOIN (
+      SELECT COUNT(*) as AnswerCalls, Sum(TALK_DURATION) as TalkDuration, ACCOUNT_CODE as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and TALK_DURATION > 0
+      AND (:CallId = '' or ACCOUNT_CODE=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY ACCOUNT_CODE 
+    ) AS ANSWER_CALLS ON TOTAL_CALLS.CallId = ANSWER_CALLS.CallId
+    LEFT JOIN (
+      SELECT COUNT(*) as HoldCalls, Sum(HOLD_DURATION) as HoldDuration, ACCOUNT_CODE as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and HOLD_DURATION > 0
+      AND (:CallId = '' or ACCOUNT_CODE=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY ACCOUNT_CODE
+    ) AS HOLD_CALLS ON TOTAL_CALLS.CallId = HOLD_CALLS.CallId
+    LEFT JOIN (
+	  SELECT COUNT(*) as MessageCalls, Sum(VM_DURATION) as VmDuration, Sum(VM_RECORD_DURATION) as VmRecordDuration, ACCOUNT_CODE as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and VM_DURATION > 0
+      AND (:CallId = '' or ACCOUNT_CODE=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY ACCOUNT_CODE
+    ) AS MESSAGE_CALLS ON TOTAL_CALLS.CallId = MESSAGE_CALLS.CallId
+    LEFT JOIN(
+	  SELECT COUNT(*) as AbandonCalls, ACCOUNT_CODE as CallId
+      FROM [Telephony_CallLogs] WHERE CALL_TYPE =6 and (EXIT_STATE=5 or EXIT_STATE=9) 
+      AND (:CallId = '' or ACCOUNT_CODE=:CallId) and (START_TIME >= :StartTime and END_TIME < :EndTime) 
+      GROUP BY ACCOUNT_CODE
+    ) AS ABANDON_CALLS ON TOTAL_CALLS.CallId = ABANDON_CALLS.CallId  
+    ]]>
+  </sql-query>
+  
+
+  <sql-query name="ExternalHourSummary">
+    <return-scalar column="Hour" type="Int32"/>
+    <return-scalar column="OutgoingCalls" type="Int32"/>
+    <return-scalar column="IncomingCalls" type="Int32"/>
+    <return-scalar column="QueueCalls" type="Int32"/>
+    <return-scalar column="TalkCalls" type="Int32"/>
+    <return-scalar column="AbandonCalls" type="Int32"/>
+    <query-param name="CalleeId" type="String"/>
+    <query-param name="StartTime" type="DateTime"/>
+    <query-param name="EndTime" type="DateTime"/>
+    <![CDATA[
+    Select Hour, Sum(OutgoingCalls) as OutgoingCalls, Sum(IncomingCalls) as IncomingCalls, 
+                 Sum(QueueCalls) as QueueCalls, Sum(TalkCalls) as TalkCalls, Sum(AbandonCalls) as AbandonCalls
+    from (
+	    select DATEPART(hh, a.START_TIME) as Hour, 
+	    ( select Count(Distinct b.SESSION_ID) from [Telephony_CallLogs] b where 
+		    b.CALL_TYPE=a.CALL_TYPE and
+		    DATEPART(hh, b.START_TIME) = DATEPART(hh, a.START_TIME) and
+		    (b.START_TIME >=:StartTime and b.START_TIME<:EndTime) and
+		    (a.CALL_TYPE=10) and (:CalleeId = '' or b.CALLEE_ID=:CalleeId)
+	    ) as OutgoingCalls,
+	    ( select Count(Distinct b.SESSION_ID) from [Telephony_CallLogs] b where 
+		    b.CALL_TYPE=a.CALL_TYPE and
+		    DATEPART(hh, b.START_TIME) = DATEPART(hh, a.START_TIME) and
+		    b.START_TIME >=:StartTime and b.START_TIME<:EndTime and
+		    (a.CALL_TYPE=6) and (:CalleeId = '' or b.CALLEE_ID=:CalleeId)
+	    ) as IncomingCalls,
+      ( select Count(Distinct b.SESSION_ID) from [Telephony_CallLogs] b where 
+		    b.CALL_TYPE=a.CALL_TYPE and
+		    DATEPART(hh, b.START_TIME) = DATEPART(hh, a.START_TIME) and (b.QUEUE_DURATION > 0) and
+		    (CALL_TYPE & 2=2) and (b.START_TIME >=:StartTime and b.START_TIME<:EndTime) and (:CalleeId = '' or b.CALLEE_ID=:CalleeId)
+	    ) as QueueCalls,
+	    ( select Count(Distinct b.SESSION_ID) from [Telephony_CallLogs] b where 
+		    b.CALL_TYPE=a.CALL_TYPE and
+		    DATEPART(hh, b.START_TIME) = DATEPART(hh, a.START_TIME) and (b.EXIT_STATE = 4 or b.EXIT_STATE = 8) and
+		    (CALL_TYPE & 2=2) and (b.START_TIME >=:StartTime and b.START_TIME<:EndTime) and (:CalleeId = '' or b.CALLEE_ID=:CalleeId)
+	    ) as TalkCalls,
+      ( select Count(Distinct b.SESSION_ID) from [Telephony_CallLogs] b where 
+		    b.CALL_TYPE=a.CALL_TYPE and
+		    DATEPART(hh, b.START_TIME) = DATEPART(hh, a.START_TIME) and (b.EXIT_STATE = 5 or b.EXIT_STATE = 9) and
+		    (CALL_TYPE & 2=2) and (b.START_TIME >=:StartTime and b.START_TIME<:EndTime) and (:CalleeId = '' or b.CALLEE_ID=:CalleeId)
+	    ) as AbandonCalls
+	    from [Telephony_CallLogs] a
+	    where (a.START_TIME >=:StartTime and a.START_TIME<:EndTime) and (:CalleeId = '' or a.CALLEE_ID=:CalleeId)
+	    group by DATEPART(hh, a.START_TIME),a.CALL_TYPE
+    ) as c group by c.Hour
+    ]]>
+  </sql-query>
+
+  
+
+  <sql-query name="ExternalQueueSummary">
+    <return-scalar column="TotalCalls" type="Int32"/>
+    <return-scalar column="AnswerCalls" type="Int32"/>
+    <return-scalar column="AbandonCalls" type="Int32"/>
+    <return-scalar column="SumDuration" type="TimeSpan"/>
+    <return-scalar column="AvgDuration" type="TimeSpan"/>
+    <return-scalar column="AvgAnswerDuration" type="TimeSpan"/>
+    <return-scalar column="AvgAbandonDuration" type="TimeSpan"/>
+    
+    <query-param name="CalleeId" type="String"/>
+    <query-param name="StartTime" type="DateTime"/>
+    <query-param name="EndTime" type="DateTime"/>
+    <![CDATA[
+      select 
+        --排队次数
+        (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (QUEUE_DURATION > 0) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as TotalCalls,
+	      --转接次数
+        (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (QUEUE_DURATION > 0) and (EXIT_STATE=4 or EXIT_STATE=8) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as AnswerCalls,
+        --挂断次数
+        (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (QUEUE_DURATION > 0) and (EXIT_STATE=9) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as AbandonCalls,
+        --总排队时间
+        IsNull((select Sum(QUEUE_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (QUEUE_DURATION > 0) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as SumDuration,
+        --平均排队时间
+        IsNull((select Avg(QUEUE_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (QUEUE_DURATION > 0) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as AvgDuration,
+        --平均排队应答时间
+        IsNull((select Avg(QUEUE_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (QUEUE_DURATION > 0) and (EXIT_STATE=4 or EXIT_STATE=8) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as AvgAnswerDuration,
+        --平均排队挂断时间
+        IsNull((select Avg(QUEUE_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (QUEUE_DURATION > 0) and (EXIT_STATE=9) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)), 0) as AvgAbandonDuration
+    ]]>
+  </sql-query>
+
+  <sql-query name="ExternalAttendantSummary">
+    <return-scalar column="TotalCalls" type="Int32"/>
+    <return-scalar column="AnswerCalls" type="Int32"/>
+    <return-scalar column="AbandonCalls" type="Int32"/>
+    <return-scalar column="SumDuration" type="TimeSpan"/>
+    <return-scalar column="AvgDuration" type="TimeSpan"/>
+    <return-scalar column="AvgAnswerDuration" type="TimeSpan"/>
+    <return-scalar column="AvgAbandonDuration" type="TimeSpan"/>
+
+    <query-param name="CalleeId" type="String"/>
+    <query-param name="StartTime" type="DateTime"/>
+    <query-param name="EndTime" type="DateTime"/>
+    <![CDATA[
+      select 
+        --IVR次数
+        (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (ATTENDANT_DURATION > 0) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as TotalCalls,
+	      --转接次数
+        (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (ATTENDANT_DURATION > 0) and (EXIT_STATE=4 or EXIT_STATE=8) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as AnswerCalls,
+        --挂断次数
+        (select Count(*) from [Telephony_CallLogs] where (CALL_TYPE=6) and (ATTENDANT_DURATION > 0) and (EXIT_STATE=9) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as AbandonCalls,
+        --总IVR时间
+        (select Sum(ATTENDANT_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (ATTENDANT_DURATION > 0) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as SumDuration,
+        --平均IVR时间
+        (select Avg(ATTENDANT_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (ATTENDANT_DURATION > 0) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as AvgDuration,
+        --平均IVR应答时间
+        (select Avg(ATTENDANT_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (ATTENDANT_DURATION > 0) and (EXIT_STATE=4 or EXIT_STATE=8) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as AvgAnswerDuration,
+        --平均IVR挂断时间
+        (select Avg(ATTENDANT_DURATION) from [Telephony_CallLogs] where (CALL_TYPE=6) and (ATTENDANT_DURATION > 0) and (EXIT_STATE=9) and (:CalleeId = '' or CALLEE_ID=:CalleeId) and (START_TIME >= :StartTime and END_TIME < :EndTime)) as AvgAbandonDuration
+    ]]>
+  </sql-query>
+  
+  
+  
+</hibernate-mapping>
